@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CyberShield - URL Risk Analyzer</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:Segoe UI,sans-serif;
+}
+
+body{
+    background:#f4f7fb;
+    min-height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    padding:20px;
+}
+
+.container{
+    width:100%;
+    max-width:800px;
+    background:white;
+    padding:30px;
+    border-radius:20px;
+    box-shadow:0 10px 30px rgba(0,0,0,.1);
+}
+
+h1{
+    text-align:center;
+    color:#111827;
+    margin-bottom:10px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#6b7280;
+    margin-bottom:25px;
+}
+
+.input-area{
+    display:flex;
+    gap:10px;
+}
+
+input{
+    flex:1;
+    padding:14px;
+    border:2px solid #d1d5db;
+    border-radius:10px;
+    font-size:16px;
+}
+
+input:focus{
+    outline:none;
+    border-color:#2563eb;
+}
+
+button{
+    padding:14px 24px;
+    border:none;
+    border-radius:10px;
+    background:#2563eb;
+    color:white;
+    font-size:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    opacity:.9;
+}
+
+.card{
+    margin-top:25px;
+    background:#f9fafb;
+    padding:20px;
+    border-radius:12px;
+}
+
+.score{
+    text-align:center;
+    font-size:22px;
+    font-weight:600;
+}
+
+.score span{
+    display:block;
+    font-size:60px;
+    margin-top:10px;
+    font-weight:700;
+}
+
+.low{
+    color:#16a34a;
+}
+
+.medium{
+    color:#f59e0b;
+}
+
+.high{
+    color:#dc2626;
+}
+
+.footer{
+    text-align:center;
+    margin-top:20px;
+    color:#6b7280;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>🔒 CyberShield</h1>
+
+<p class="subtitle">
+Educational URL Risk Analyzer
+</p>
+
+<div class="input-area">
+
+<input
+type="text"
+id="url"
+placeholder="Paste website URL here..."
+>
+
+<button onclick="analyze()">
+Analyze
+</button>
+
+</div>
+
+<div class="card">
+
+<div id="score" class="score">
+Security Score
+<span>--</span>
+</div>
+
+</div>
+
+<div class="footer">
+Cybersecurity Educational Project
+</div>
+
+</div>
+
+<script>
+
+function animateScore(finalScore, riskClass){
+
+    let current = 0;
+
+    const scoreElement =
+    document.getElementById("score");
+
+    const duration = 1500;
+
+    const increment =
+    finalScore / (duration / 16);
+
+    const timer = setInterval(() => {
+
+        current += increment;
+
+        if(current >= finalScore){
+            current = finalScore;
+            clearInterval(timer);
+        }
+
+        scoreElement.innerHTML =
+        `Security Score
+        <span class="${riskClass}">
+        ${Math.floor(current)}%
+        </span>`;
+
+    },16);
+}
+
+function analyze(){
+
+    const url =
+    document.getElementById("url")
+    .value.trim();
+
+    if(url===""){
+        alert("Please enter a URL");
+        return;
+    }
+
+    let score = 100;
+
+    if(!url.startsWith("https://")){
+        score -= 25;
+    }
+
+    if(url.length > 60){
+        score -= 10;
+    }
+
+    if(url.includes("@")){
+        score -= 20;
+    }
+
+    const ipPattern =
+    /^https?:\/\/(\d{1,3}\.){3}\d{1,3}/;
+
+    if(ipPattern.test(url)){
+        score -= 20;
+    }
+
+    const suspiciousWords = [
+        "login",
+        "signin",
+        "verify",
+        "secure",
+        "update",
+        "password",
+        "account",
+        "banking"
+    ];
+
+    suspiciousWords.forEach(word => {
+
+        if(url.toLowerCase().includes(word)){
+            score -= 5;
+        }
+
+    });
+
+    if(score < 0){
+        score = 0;
+    }
+
+    let riskClass = "low";
+
+    if(score < 80){
+        riskClass = "medium";
+    }
+
+    if(score < 50){
+        riskClass = "high";
+    }
+
+    animateScore(score, riskClass);
+}
+
+</script>
+
+</body>
+</html>
